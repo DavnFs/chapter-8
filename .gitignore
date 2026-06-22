@@ -1,0 +1,32 @@
+# Core tools and binaries downloaded locally
+kubectl
+minikube-linux-amd64
+
+# PDF books & materials
+*.pdf
+*.pdf:Zone.Identifier
+
+# Gradle & Java build outputs
+.gradle/
+**/build/
+**/out/
+
+# Python cache & virtual environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+venv/
+.venv/
+env/
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local configuration and agent metadata
+.agents/
+.commandcode/
+.gemini/
