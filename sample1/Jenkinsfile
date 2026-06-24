@@ -45,7 +45,7 @@ pipeline {
           stage("Docker build") {
                steps {
                     dir('sample1') {
-                         sh "docker build -t davnfs/calculator:${BUILD_TIMESTAMP} ."
+                         sh "docker build -t yumemirai/calculator:${BUILD_TIMESTAMP} ."
                     }
                }
           }
@@ -53,7 +53,10 @@ pipeline {
           stage("Docker push") {
                steps {
                     dir('sample1') {
-                         sh "docker push davnfs/calculator:${BUILD_TIMESTAMP}"
+                         withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
+                              sh "echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin"
+                              sh "docker push yumemirai/calculator:${BUILD_TIMESTAMP}"
+                         }
                     }
                }
           }
