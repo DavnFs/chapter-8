@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  jenkins:
+    build: .
+    container_name: jenkins
+    user: root
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      # 1. Menyelamatkan nyawa data Jenkins kamu (pipeline, plugin, password)
+      - jenkins_home:/var/jenkins_home
+      # 2. Menyambungkan Jenkins ke mesin Docker utama di WSL
+      - /var/run/docker.sock:/var/run/docker.sock
+      # 3. Mengkopi kunci akses Kubernetes
+      - ~/.kube:/root/.kube:ro
+      # 4. Trik krusial: Membuat cermin sertifikat Minikube dengan path yang identik
+      - ~/.minikube:${HOME}/.minikube:ro
+
+volumes:
+  jenkins_home:
