@@ -175,3 +175,33 @@ Run the complete CD pipeline from Chapter 8 using WSL Ubuntu: build, test, conta
 - **kubeconfig sharing**: The `-v $HOME/.kube:/var/jenkins_home/.kube` mount gives Jenkins access to your Minikube clusters. You may need to fix paths inside the container.
 
 - **WSL2 networking**: If you hit networking issues between WSL and browser, try `wsl hostname -I` to get the WSL IP and replace `localhost`.
+
+---
+
+## Troubleshooting & Common Issues Encountered
+
+Berdasarkan pengalaman sebelumnya, berikut adalah kompilasi masalah yang telah terjadi dan solusinya (Sangat disarankan untuk mengantisipasinya dari awal):
+
+1. **Error `./gradlew: not found` (Walaupun file ada)**: 
+   - **Penyebab:** Format baris file di Windows berubah menjadi CRLF (`\r\n`), sehingga Linux membaca *hashbang* interpreter sebagai `sh\r` yang tidak dikenali.
+   - **Solusi:** Lakukan konversi CRLF menjadi LF pada file `gradlew` dan `*.sh` di dalam repository. Sangat direkomendasikan mengonfigurasi Git dengan `git config --global core.autocrlf false` sebelum melakukan `git clone` di Windows.
+
+2. **Error `Unsupported class file major version 65` (saat Gradle compile)**:
+   - **Penyebab:** Jenkins berjalan dengan **Java 21** (major version 65), tetapi kode bawaan menggunakan Gradle `7.3.1` yang maksimal hanya men-*support* Java 17.
+   - **Solusi:** Upgrade versi Gradle ke `8.5` di dalam `gradle/wrapper/gradle-wrapper.properties`.
+
+3. **Plugin Error Spring Boot di Java 21**:
+   - **Penyebab:** Setelah upgrade Gradle ke 8.5, kompiler akan tetap gagal (meskipun `sourceCompatibility='11'`) karena Spring Boot `2.6.x` dan plugin-nya tidak kompatibel dengan Java 21.
+   - **Solusi:** Edit file `build.gradle`, naikkan versi plugin `org.springframework.boot` menjadi `2.7.18` dan `io.spring.dependency-management` menjadi `1.1.4`.
+
+4. **Network Timeout / Could not resolve host di dalam Jenkins Pipeline**:
+   - **Penyebab:** Koneksi internet / DNS di dalam jaringan internal Docker (terutama jika berjalan di backend WSL 2) terkadang mengalami *disconnect* atau *timeout* saat men-*download* dependency.
+   - **Solusi:** Restart WSL (`wsl --shutdown`) atau yang paling stabil adalah dengan menjalankan / menginstall **Docker Desktop** saja, lalu merestart container Jenkins. Atau cukup tekan tombol `Build Now` sekali lagi karena seringkali ini hanya gangguan sesaat.
+
+5. **`docker login` / Kredensial Docker Hub di Jenkinsfile**:
+   - **Penyebab:** Jenkinsfile lama mungkin menggunakan `docker push` secara langsung tanpa proses login.
+   - **Solusi:** Tambahkan blok `withCredentials` di *stage* Docker push dalam `Jenkinsfile` dan daftarkan *Global Credentials* di Jenkins dengan ID yang sesuai (misal: `dockerhub`).
+
+6. **Error Permission Denied `gradlew` di Jenkins Pipeline**:
+   - **Penyebab:** Jenkins mengambil file `gradlew` dari GitHub yang belum memiliki akses _executable_ (`+x`).
+   - **Solusi:** Tambahkan command `sh "chmod +x gradlew"` tepat sebelum mengeksekusi `./gradlew compileJava` di *stage* pertama `Jenkinsfile`.
