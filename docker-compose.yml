@@ -1,22 +1,14 @@
-version: "3.8"
-
 services:
     jenkins:
         build: .
         container_name: jenkins
         user: root
         restart: unless-stopped
-        ports:
-            - "8080:8080"
-            - "50000:50000"
+        network_mode: "host"
         volumes:
             - jenkins_home:/var/jenkins_home
             - /var/run/docker.sock:/var/run/docker.sock
-
-            # Kita arahkan ke /host/.kube secara Read-Only (:ro) agar aman dan tidak bentrok
             - ~/.kube:/host/.kube:ro
-
-            # Sertifikat minikube tetap di-mount ke path asli
             - ~/.minikube:${HOME}/.minikube:ro
 
 volumes:
