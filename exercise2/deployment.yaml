@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: hello
-        image: leszko/hello-service:{{VERSION}}
+        image: davnfs/hello-service:{{VERSION}}
         ports:
         - containerPort: 5000
 

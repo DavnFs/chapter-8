@@ -16,6 +16,6 @@ spec:
         spec:
             containers:
                 - name: calculator
-                  image: yumemirai/calculator:{{VERSION}}
+                  image: davnfs/calculator:{{VERSION}}
                   ports:
                       - containerPort: 8080
