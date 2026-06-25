@@ -7,7 +7,7 @@ pipeline {
           stage("Docker build") {
                steps {
                     dir('exercise2') {
-                         sh "docker build -t davnfs/hello-service:${BUILD_TIMESTAMP} ."
+                         sh "docker build -t yumemirai/hello-service:${BUILD_TIMESTAMP} ."
                     }
                }
           }
@@ -15,7 +15,7 @@ pipeline {
           stage("Docker push") {
                steps {
                     dir('exercise2') {
-                         sh "docker push davnfs/hello-service:${BUILD_TIMESTAMP}"
+                         sh "docker push yumemirai/hello-service:${BUILD_TIMESTAMP}"
                     }
                }
           }
@@ -27,7 +27,7 @@ pipeline {
                     }
                }
           }
-          
+
           stage("Deploy to staging") {
                steps {
                     dir('exercise2') {
